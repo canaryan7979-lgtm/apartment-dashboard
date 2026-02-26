@@ -36,10 +36,15 @@
                 <h1 class="text-3xl font-bold text-slate-800">우리 동네 아파트 실거래가 대시보드</h1>
                 <p class="text-slate-500 mt-1">최신 아파트 거래 현황을 분석하고 시각화합니다.</p>
             </div>
-            <!-- 변경: bg-green-600, hover:bg-green-700 -->
-            <button onclick="fetchData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition shadow-sm font-medium">
-                데이터 새로고침
-            </button>
+            <!-- 변경: 필터 드롭다운과 새로고침 버튼을 함께 배치 -->
+            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                <select id="dong-filter" onchange="applyFilter()" class="bg-white border border-slate-300 text-slate-700 py-2 px-4 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 font-medium">
+                    <option value="전체">전체 동네</option>
+                </select>
+                <button onclick="fetchData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition shadow-sm font-medium whitespace-nowrap">
+                    데이터 새로고침
+                </button>
+            </div>
         </header>
 
         <!-- Loading Overlay -->
@@ -52,53 +57,61 @@
 
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <!-- 변경: 초록색 톤으로 보더 및 숫자 색상 통일 -->
+            <!-- 변경: 초록색 톤으로 보더 및 숫자 색상 통일, 이모지 추가 -->
             <div class="card p-6 border-l-4 border-green-400">
-                <p class="text-sm text-slate-500 font-medium">전체 거래 건수</p>
+                <p class="text-sm text-slate-500 font-medium">🏠 전체 거래 건수</p>
                 <h3 id="stat-total" class="text-2xl font-bold text-green-700 mt-1">-</h3>
             </div>
             <div class="card p-6 border-l-4 border-green-500">
-                <p class="text-sm text-slate-500 font-medium">평균 거래가격</p>
+                <p class="text-sm text-slate-500 font-medium">💰 평균 거래가격</p>
                 <h3 id="stat-avg" class="text-2xl font-bold text-green-700 mt-1">-</h3>
             </div>
             <div class="card p-6 border-l-4 border-green-600">
-                <p class="text-sm text-slate-500 font-medium">최고 거래가격</p>
+                <p class="text-sm text-slate-500 font-medium">📈 최고 거래가격</p>
                 <h3 id="stat-max" class="text-2xl font-bold text-green-700 mt-1">-</h3>
             </div>
             <div class="card p-6 border-l-4 border-green-700">
-                <p class="text-sm text-slate-500 font-medium">최저 거래가격</p>
+                <p class="text-sm text-slate-500 font-medium">📉 최저 거래가격</p>
                 <h3 id="stat-min" class="text-2xl font-bold text-green-700 mt-1">-</h3>
             </div>
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Chart Container -->
-            <div class="card p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Chart Container (Takes 2 columns) -->
+            <div class="card p-6 lg:col-span-2">
                 <h2 class="text-xl font-bold text-slate-800 mb-6">월별 평균 거래가격 추이 (만원)</h2>
                 <div class="h-80 relative">
                     <canvas id="priceChart"></canvas>
                 </div>
             </div>
 
-            <!-- Table Container -->
+            <!-- Top 5 Container (NEW) -->
             <div class="card p-6">
-                <h2 class="text-xl font-bold text-slate-800 mb-6">최신 거래 목록</h2>
-                <div class="table-container border rounded-lg">
-                    <table class="w-full text-sm text-left text-slate-600">
-                        <thead class="text-xs uppercase bg-slate-50 sticky top-0 text-slate-700 font-semibold border-b">
-                            <tr>
-                                <th class="px-4 py-3">거래일자</th>
-                                <th class="px-4 py-3">아파트명</th>
-                                <th class="px-4 py-3 text-right">금액(만원)</th>
-                                <th class="px-4 py-3 text-right">면적(㎡)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transaction-table-body">
-                            <!-- Rows will be added here via JS -->
-                        </tbody>
-                    </table>
+                <h2 class="text-xl font-bold text-slate-800 mb-6">🏆 우리 동네 비싼 아파트 TOP 5</h2>
+                <div class="space-y-3" id="top5-container">
+                    <!-- Top 5 list will be added here via JS -->
                 </div>
+            </div>
+        </div>
+
+        <!-- Table Container (Full Width) -->
+        <div class="card p-6 mb-8">
+            <h2 class="text-xl font-bold text-slate-800 mb-6">최신 거래 목록</h2>
+            <div class="table-container border rounded-lg">
+                <table class="w-full text-sm text-left text-slate-600">
+                    <thead class="text-xs uppercase bg-slate-50 sticky top-0 text-slate-700 font-semibold border-b">
+                        <tr>
+                            <th class="px-4 py-3">거래일자</th>
+                            <th class="px-4 py-3">아파트명</th>
+                            <th class="px-4 py-3 text-right">금액(만원)</th>
+                            <th class="px-4 py-3 text-right">면적(㎡)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-table-body">
+                        <!-- Rows will be added here via JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -113,6 +126,7 @@
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSy6gHRdGFOGRYr6AN_oRCJ-5IRpq9_6uNnOvZCVLK1JFFShRFf3V3vYr46Ke-zVovuz0094-izOygm/pub?gid=67810494&single=true&output=csv";
 
         let myChart = null;
+        let globalData = []; // 전체 데이터를 저장할 전역 변수 추가
 
         async function fetchData() {
             showLoading(true);
@@ -143,7 +157,7 @@
 
         function processData(data) {
             // 1. Cleaning and Formatting
-            const cleanedData = data.filter(row => row['거래일자'] && row['거래금액(만원)'])
+            globalData = data.filter(row => row['거래일자'] && row['거래금액(만원)'])
                                     .map(row => {
                                         // Handle potential string cleaning for price if necessary
                                         const price = typeof row['거래금액(만원)'] === 'string' ? 
@@ -156,9 +170,52 @@
                                         };
                                     });
 
+            // 법정동 목록 추출 및 드롭다운 메뉴 채우기
+            const dongs = [...new Set(globalData.map(d => d['법정동']))].filter(Boolean).sort();
+            const select = document.getElementById('dong-filter');
+            
+            // 기존 옵션 초기화 후 "전체" 추가
+            select.innerHTML = '<option value="전체">전체 동네</option>';
+            
+            dongs.forEach(dong => {
+                const option = document.createElement('option');
+                option.value = dong;
+                option.textContent = dong;
+                select.appendChild(option);
+            });
+
+            // 초기 대시보드 렌더링 (전체 데이터)
+            applyFilter();
+        }
+
+        function applyFilter() {
+            const selectedDong = document.getElementById('dong-filter').value;
+            let filteredData = globalData;
+            
+            // 선택된 동네가 "전체"가 아니면 필터링 적용
+            if (selectedDong !== "전체") {
+                filteredData = globalData.filter(d => d['법정동'] === selectedDong);
+            }
+
+            updateDashboard(filteredData);
+        }
+
+        function updateDashboard(data) {
+            // 데이터가 없는 경우 처리
+            if (data.length === 0) {
+                document.getElementById('stat-total').innerText = '0 건';
+                document.getElementById('stat-avg').innerText = '0 만원';
+                document.getElementById('stat-max').innerText = '0 만원';
+                document.getElementById('stat-min').innerText = '0 만원';
+                renderTable([]);
+                renderChart([], []);
+                renderTop5([]); // 추가된 TOP 5 초기화
+                return;
+            }
+
             // 2. Summary Stats
-            const total = cleanedData.length;
-            const prices = cleanedData.map(d => d.price);
+            const total = data.length;
+            const prices = data.map(d => d.price);
             const avg = prices.reduce((a, b) => a + b, 0) / total;
             const max = Math.max(...prices);
             const min = Math.min(...prices);
@@ -169,12 +226,14 @@
             document.getElementById('stat-min').innerText = min.toLocaleString() + ' 만원';
 
             // 3. Render Table
-            renderTable(cleanedData);
+            renderTable(data);
+
+            // 3-1. Render Top 5
+            renderTop5(data);
 
             // 4. Monthly Chart Data
-            // Logic: Group by YYYY-MM
             const monthlyData = {};
-            cleanedData.forEach(d => {
+            data.forEach(d => {
                 const monthKey = d.date.substring(0, 7); // "2024-01" or "202401" depending on source format
                 if (!monthlyData[monthKey]) {
                     monthlyData[monthKey] = { sum: 0, count: 0 };
@@ -198,17 +257,72 @@
             // Sort by date descending
             const sorted = [...data].sort((a, b) => b.date.localeCompare(a.date));
 
-            sorted.forEach(row => {
+            sorted.forEach((row, index) => {
                 const tr = document.createElement('tr');
-                tr.className = "border-b hover:bg-slate-50 transition";
-                // 변경: 텍스트 색상을 파란색에서 초록색(text-green-600)으로 변경
+                
+                // 짝수/홀수 줄무늬(Zebra) 및 호버(Hover) 시 연한 초록색 배경 강조
+                const bgClass = index % 2 === 0 ? 'bg-white' : 'bg-slate-50';
+                tr.className = `border-b ${bgClass} hover:!bg-green-100 transition duration-150`;
+                
+                // 5억(50,000만원) 이상이면 빨간색, 아니면 기존 초록색 유지
+                const priceColorClass = row.price >= 50000 ? 'text-red-500' : 'text-green-600';
+
                 tr.innerHTML = `
                     <td class="px-4 py-3 font-medium">${row.date}</td>
                     <td class="px-4 py-3">${row['아파트명']}</td>
-                    <td class="px-4 py-3 text-right font-semibold text-green-600">${row.price.toLocaleString()}</td>
+                    <td class="px-4 py-3 text-right font-semibold ${priceColorClass}">${row.price.toLocaleString()}</td>
                     <td class="px-4 py-3 text-right text-slate-400">${row['전용면적(㎡)']}㎡</td>
                 `;
                 tbody.appendChild(tr);
+            });
+        }
+
+        // 추가된 TOP 5 렌더링 함수
+        function renderTop5(data) {
+            const container = document.getElementById('top5-container');
+            container.innerHTML = "";
+
+            if (data.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">거래 데이터가 없습니다.</p>';
+                return;
+            }
+
+            // 금액 기준 내림차순 정렬
+            const sortedDesc = [...data].sort((a, b) => {
+                if (b.price !== a.price) return b.price - a.price;
+                // 금액이 같을 경우 최신 거래일자 우선
+                return b.date.localeCompare(a.date);
+            });
+
+            // 상위 5개 추출
+            const top5 = sortedDesc.slice(0, 5);
+
+            top5.forEach((row, index) => {
+                const rank = index + 1;
+                
+                // 1~3위 금, 은, 동 강조 및 4~5위 기본 색상
+                let badgeColor = "bg-slate-100 text-slate-600";
+                if (rank === 1) badgeColor = "bg-yellow-100 text-yellow-600 border border-yellow-300"; // 금색
+                else if (rank === 2) badgeColor = "bg-gray-200 text-gray-500 border border-gray-400"; // 은색
+                else if (rank === 3) badgeColor = "bg-orange-100 text-orange-600 border border-orange-300"; // 동색
+
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50 hover:bg-green-50 transition";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm shadow-sm ${badgeColor}">
+                            ${rank}
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-700 text-sm truncate w-32 md:w-48" title="${row['아파트명']}">${row['아파트명']}</p>
+                            <p class="text-xs text-slate-500">${row['전용면적(㎡)']}㎡ · ${row['층']}층</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-green-600">${row.price.toLocaleString()}만</p>
+                    </div>
+                `;
+                container.appendChild(item);
             });
         }
 
